@@ -21,11 +21,21 @@ A React-based workout management application built with Vite and Bootstrap.
    ```bash
    npm install
    ```
-4. Start the development server:
+4. **Set up your environment variables:**
+   ```bash
+   # Copy the example file to create your local config
+   cp .env.example .env.local
+   ```
+   Then open `.env.local` and update the `VITE_API_URL` with your backend URL:
+   - If backend runs locally: `http://localhost:8000`
+   - If backend is on a different port: `http://localhost:3000`
+   - If backend is remote: `http://your-backend-server.com`
+
+5. Start the development server:
    ```bash
    npm run dev
    ```
-5. Open your browser to `http://localhost:5173`
+6. Open your browser to `http://localhost:5173`
 
 ##  Project Structure
 
