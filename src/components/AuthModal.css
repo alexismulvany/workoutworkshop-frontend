@@ -143,3 +143,81 @@
 .auth-link:hover {
     color: #cb0a0a;
 }
+
+/* Error text */
+.auth-error {
+    color: #c62828;
+    font-size: 0.9rem;
+    margin-top: 6px;
+}
+
+/* Radio pills for goal selection */
+.auth-radio {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.auth-radio input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    display: inline-block;
+    margin: 0;
+    position: relative;
+}
+
+.auth-radio input[type="radio"]:checked {
+    border-color: #ff0000;
+    background: #ff0000;
+}
+
+.auth-radio-label {
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+    display: inline-block;
+}
+
+.auth-radio input[type="radio"]:checked + .auth-radio-label {
+    background: #ff0000;
+    color: #fff;
+    border-color: #ff0000;
+}
+
+.auth-radio input[type="radio"]:focus + .auth-radio-label {
+    box-shadow: 0 0 0 3px rgba(255,0,0,0.12);
+}
+
+/* Small helper for required indicator */
+.auth-required {
+    color: #c62828;
+    margin-left: 6px;
+    font-size: 0.9rem;
+}
+
+/* Expiry Input for Payment */
+.expiry-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+}
+
+/* Ensure the two expiry inputs sit nicely when parent uses flex */
+.auth-field .expiry-input {
+  max-width: 100%;
+}
+
+/* For small screens make them slightly smaller */
+@media (max-width: 420px) {
+  .expiry-input {
+    padding: 6px 8px;
+    font-size: 0.95rem;
+  }
+}

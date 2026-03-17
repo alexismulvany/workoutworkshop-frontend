@@ -10,7 +10,6 @@ export default function Register({ onClose, onSwitchToLogin }) {
         password: "",
         confirmPassword: "",
         isCoach: false,
-        // non-coach fields
         first_name: "",
         last_name: "",
         birthday: "",
@@ -19,7 +18,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
         pricing: 50,
         bio: "",
         availability: "",
-        // weight step
+        // goal step
         current_weight: 150,
         goal_weight: 140,
         goal_type: "",
@@ -31,15 +30,15 @@ export default function Register({ onClose, onSwitchToLogin }) {
         cardCVC: "",
     });
 
-    const certificationOptions = [
-      'Coach', 'Nutritionist'
-    ];
+    const certificationOptions = ['Coach', 'Nutritionist'];
+    const goalType = ["Strength", "Stamina", "WeightLoss"];
 
     // Username availability states
-    const [usernameAvailable, setUsernameAvailable] = useState(null); // null = unknown, true/false = known
+    const [usernameAvailable, setUsernameAvailable] = useState(null);
     const [checkingUsername, setCheckingUsername] = useState(false);
     const usernameDebounceRef = useRef(null);
 
+    //Master form change handler
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         if (type === 'checkbox' && name === 'isCoach') {
@@ -53,14 +52,15 @@ export default function Register({ onClose, onSwitchToLogin }) {
           // single-select goal checkboxes
           setFormData({ ...formData, goal_type: checked ? value : "" });
         } else {
+            // Default
           setFormData({ ...formData, [name]: value });
         }
     };
 
     // Check username availability (POST to /auth/check-username expecting { available: true/false })
     const checkUsernameAvailability = async (username) => {
-        const apiBase = import.meta.env.VITE_API_URL || '';
-        if (!username || username.length < 2) {
+        const apiBase = import.meta.env.VITE_API_URL;
+        if (!username) {
             setUsernameAvailable(null);
             setCheckingUsername(false);
             return null;
@@ -90,7 +90,6 @@ export default function Register({ onClose, onSwitchToLogin }) {
 
     // Debounced effect when username changes
     useEffect(() => {
-        // clear previous timer
         if (usernameDebounceRef.current) clearTimeout(usernameDebounceRef.current);
 
         const username = formData.username && formData.username.trim();
@@ -112,6 +111,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
 
     // Modal navigation handlers
     const goNext = async () => {
+
         // basic validation on step 1
         if (step === 1) {
             if (!formData.username || !formData.password || !formData.confirmPassword) {
@@ -123,7 +123,6 @@ export default function Register({ onClose, onSwitchToLogin }) {
                 return;
             }
 
-            // If we don't know availability yet, force a check and wait
             if (usernameAvailable === null && !checkingUsername) {
                 const avail = await checkUsernameAvailability(formData.username);
                 if (avail === false) {
@@ -149,10 +148,45 @@ export default function Register({ onClose, onSwitchToLogin }) {
                 alert('Please fill first name, last name and birthday');
                 return;
             }
+
             if (formData.isCoach) {
-                if (!formData.bio) {
-                    if (!confirm('Bio is empty. Continue?')) return;
+                // certifications: at least one
+                if (!formData.certifications || formData.certifications.length === 0) {
+                    alert('Please select at least one certification');
+                    return;
                 }
+                if (formData.pricing === undefined || formData.pricing === null || formData.pricing === '') {
+                    alert('Please set your pricing');
+                    return;
+                }
+                // bio required for coach
+                if (!formData.bio || !formData.bio.trim()) {
+                    alert('Please enter a bio');
+                    return;
+                }
+                // availability required for coach
+                if (!formData.availability || !formData.availability.trim()) {
+                    alert('Please enter your availability');
+                    return;
+                }
+            }
+        }
+
+        // validation for step 3
+        if (step === 3) {
+            if (!formData.goal_type) {
+                alert('Please select a goal type before continuing.');
+                return;
+            }
+            const current = Number(formData.current_weight);
+            const goal = Number(formData.goal_weight);
+            if (!current || isNaN(current)) {
+                alert('Please set your current weight');
+                return;
+            }
+            if (!goal || isNaN(goal)) {
+                alert('Please set your goal weight');
+                return;
             }
         }
 
@@ -164,7 +198,38 @@ export default function Register({ onClose, onSwitchToLogin }) {
     const handleSubmit = async (e) => {
         e && e.preventDefault();
 
-        // final submission: build payload
+        // Payment fields validation: if any payment field is present, require all and validate
+        const { cardName, cardNumber, cardExpMonth, cardExpYear, cardCVC } = formData;
+        const anyPayment = (cardName || cardNumber || cardExpMonth || cardExpYear || cardCVC);
+        if (anyPayment) {
+            if (!cardName || !cardNumber || !cardExpMonth || !cardExpYear || !cardCVC) {
+                alert('Please complete all payment fields or leave all blank to skip payment');
+                return;
+            }
+            // number checks
+            const cleaned = (cardNumber || '').replace(/\s+/g, '');
+            if (!/^\d{12,19}$/.test(cleaned)) {
+                alert('Please enter a valid card number (12-19 digits)');
+                return;
+            }
+            const month = parseInt(cardExpMonth, 10);
+            if (isNaN(month) || month < 1 || month > 12) {
+                alert('Please enter a valid expiry month (1-12)');
+                return;
+            }
+            const year = parseInt(cardExpYear, 10);
+            const nowYear = new Date().getFullYear();
+            if (isNaN(year) || year < nowYear) {
+                alert('Please enter a valid expiry year (current year or later)');
+                return;
+            }
+            if (!/^\d{3,4}$/.test(cardCVC)) {
+                alert('Please enter a valid CVC (3 or 4 digits)');
+                return;
+            }
+        }
+
+        // build payload
         const payload = {
             username: formData.username,
             password: formData.password,
@@ -180,15 +245,16 @@ export default function Register({ onClose, onSwitchToLogin }) {
             goal_weight: formData.goal_weight,
             goal_type: formData.goal_type,
             // Optional
-            payment: formData.cardNumber ? {
+            payment: anyPayment ? {
                 name: formData.cardName,
-                number: formData.cardNumber,
+                number: (formData.cardNumber || '').replace(/\s+/g, ''),
                 exp_month: formData.cardExpMonth,
                 exp_year: formData.cardExpYear,
                 cvc: formData.cardCVC,
             } : undefined,
         };
 
+        // Call Register API (expecting token and user in response for auto-login, but can work without)
         try {
             const apiBase = import.meta.env.VITE_API_URL || '';
             const endpoint = `${apiBase}/auth/register`;
@@ -209,12 +275,11 @@ export default function Register({ onClose, onSwitchToLogin }) {
                     if (result.user) {
                         setUser(result.user);
                     }
-
                     if (onClose && typeof onClose === 'function') {
                         onClose();
                     }
                 } else {
-                    // Fallback to previous behavior when token is not returned
+                    // token is not returned
                     if (onSwitchToLogin && typeof onSwitchToLogin === 'function') {
                         onSwitchToLogin();
                     } else if (onClose && typeof onClose === 'function') {
@@ -222,7 +287,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
                     }
                 }
 
-                // reset
+                // reset form data
                 setFormData({
                     username: "",
                     password: "",
@@ -292,7 +357,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
                     </div>
 
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                      <button type="button" className="auth-submit-btn" onClick={goNext}>Next</button>
+                      <button type="button" className="auth-submit-btn" onClick={goNext} disabled={checkingUsername}>Next</button>
                     </div>
                   </form>
                 )}
@@ -328,7 +393,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
                         </div>
 
                         <div className="auth-field">
-                            <label htmlFor="pricing">Pricing (${formData.pricing} / hr)</label>
+                            <label htmlFor="pricing">Pricing (${formData.pricing} / wk)</label>
                             <input type="range" id="pricing" name="pricing" min="0" max="500" value={formData.pricing} onChange={handleChange} />
                         </div>
 
@@ -351,9 +416,9 @@ export default function Register({ onClose, onSwitchToLogin }) {
                   </form>
                 )}
 
-                {/* Step 3 Username, password, coach? */}
+                {/* Step 3 Current Weight, Goal Weight, Goal */}
                 {step === 3 && (
-                  <form onSubmit={(e) => { e.preventDefault(); setStep(4); }} className="auth-form">
+                  <form onSubmit={(e) => { e.preventDefault(); goNext(); }} className="auth-form">
                     <div className="auth-field">
                         <label htmlFor="current_weight">Current Weight: {formData.current_weight} lbs</label>
                         <input type="range" id="current_weight" name="current_weight" min="60" max="400" value={formData.current_weight} onChange={handleChange} />
@@ -367,15 +432,9 @@ export default function Register({ onClose, onSwitchToLogin }) {
                     <div className="auth-field">
                       <label>Goal Type (required)</label>
                       <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                        {["Strength", "Stamina", "WeightLoss"].map((goal) => (
-                          <label key={goal} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <input
-                              type="checkbox"
-                              name="goal_type"
-                              value={goal}
-                              checked={formData.goal_type === goal}
-                              onChange={handleChange}
-                            />
+                        {goalType.map((goal) => (
+                          <label key={goal} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                            <input type="radio" name="goal_type" value={goal} checked={formData.goal_type === goal} onChange={handleChange} style={{ marginRight: '6px' }}/>
                             {goal}
                           </label>
                         ))}
@@ -385,38 +444,22 @@ export default function Register({ onClose, onSwitchToLogin }) {
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
                       <button type="button" className="auth-submit-btn" onClick={goBack}>Back</button>
                       <div>
-                        <button
-                          type="button"
-                          className="auth-submit-btn"
-                          onClick={() => {
-                            if (!formData.goal_type) {
-                              alert('Please select a goal type before continuing.');
-                              return;
-                            }
-                            setStep(4);
-                          }}
-                        >
-                          Next
-                        </button>
-                        <button
-                          type="button"
-                          style={{ marginLeft: '8px' }}
-                          className="auth-submit-btn"
-                          onClick={() => {
+                        <button type="button" className="auth-submit-btn" onClick={goNext}>Next</button>
+
+                        <button type="button" style={{ marginLeft: '8px' }} className="auth-submit-btn" onClick={() => {
                             if (!formData.goal_type) {
                               alert('Please select a goal type before finishing.');
                               return;
                             }
                             handleSubmit();
-                          }}
-                        >
-                          Finish (skip payment)
-                        </button>
+                        }}>Finish (skip payment)</button>
+
                       </div>
                     </div>
                   </form>
                 )}
 
+                {/* Optional Payment details */}
                 {step === 4 && (
                   <form onSubmit={handleSubmit} className="auth-form">
                     <div className="auth-field">
@@ -432,12 +475,12 @@ export default function Register({ onClose, onSwitchToLogin }) {
                     <div style={{ display: 'flex', gap: '8px' }}>
                         <div className="auth-field" style={{ flex: 1 }}>
                             <label htmlFor="cardExpMonth">Expiry Month</label>
-                            <input type="text" id="cardExpMonth" name="cardExpMonth" value={formData.cardExpMonth} onChange={handleChange} placeholder="MM" />
+                            <input id="cardExpMonth" name="cardExpMonth" className="expiry-input" value={formData.cardExpMonth} onChange={handleChange} placeholder="MM" />
                         </div>
 
                         <div className="auth-field" style={{ flex: 1 }}>
                             <label htmlFor="cardExpYear">Expiry Year</label>
-                            <input type="text" id="cardExpYear" name="cardExpYear" value={formData.cardExpYear} onChange={handleChange} placeholder="YYYY" />
+                            <input id="cardExpYear" name="cardExpYear" className="expiry-input" value={formData.cardExpYear} onChange={handleChange} placeholder="YYYY" />
                         </div>
                     </div>
 
