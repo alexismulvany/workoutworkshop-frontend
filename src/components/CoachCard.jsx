@@ -4,10 +4,10 @@ import Card from 'react-bootstrap/Card';
 import Image from 'react-bootstrap/Image';
 
 //star images for ratings
-import onestars from "../images/1_stars.png"
-import twostars from "../images/2_stars.png"
-import threestars from "../images/3_stars.png"
-import fourstars from "../images/4_stars.png"
+import onestars from "../images/1_star_NOBG.png"
+import twostars from "../images/2_star_NOBG.png"
+import threestars from "../images/3_star_NOBG.png"
+import fourstars from "../images/4_star_NOBG.png"
 import fivestars from "../images/5_star_NOBG.png"
 
 import DefaultProfilePic from '../images/DefaultProfile.jpg'

@@ -5,7 +5,12 @@ import test from '../images/SAMSULEKTEST.png'
 
 import DOTWvailibility from './DOTWavailibility'
 
-import fivestars from '../images/5_star_NOBG.png'
+//star images for ratings
+import onestars from "../images/1_star_NOBG.png"
+import twostars from "../images/2_star_NOBG.png"
+import threestars from "../images/3_star_NOBG.png"
+import fourstars from "../images/4_star_NOBG.png"
+import fivestars from "../images/5_star_NOBG.png"
 
 
 const MODAL_STYLES={
