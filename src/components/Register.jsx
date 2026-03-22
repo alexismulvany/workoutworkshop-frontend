@@ -22,6 +22,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
         current_weight: 150,
         goal_weight: 140,
         goal_type: "",
+        goal_text: "",
         // payment
         cardName: "",
         cardNumber: "",
@@ -244,6 +245,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
             current_weight: formData.current_weight,
             goal_weight: formData.goal_weight,
             goal_type: formData.goal_type,
+            goal_text: formData.goal_text,
             // Optional
             payment: anyPayment ? {
                 name: formData.cardName,
@@ -303,6 +305,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
                     current_weight: 150,
                     goal_weight: 140,
                     goal_type: "",
+                    goal_text: "",
                     cardName: "",
                     cardNumber: "",
                     cardExpMonth: "",
@@ -439,6 +442,11 @@ export default function Register({ onClose, onSwitchToLogin }) {
                           </label>
                         ))}
                       </div>
+                    </div>
+
+                    <div className="auth-field">
+                        <label htmlFor="goal_text">Goal Notes (optional)</label>
+                        <input type="text" id="goal_text" name="goal_text" value={formData.goal_text} onChange={handleChange} placeholder="e.g., Lose 15 lbs by summer"/>
                     </div>
 
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
