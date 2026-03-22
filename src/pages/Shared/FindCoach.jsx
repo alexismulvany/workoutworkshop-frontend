@@ -4,7 +4,6 @@ import filter from "../../images/FilterButton.png"
 import Image from 'react-bootstrap/Image';
 import axios from 'axios'
 import Dropdown from 'react-bootstrap/Dropdown';
-import CoachInfoModal from "../../components/CoachInfoModal";
 
 /*
 TODO:
@@ -87,7 +86,6 @@ export default function FindCoach() {
     }
 
     return (
-        <>
         <div className="container mt-4" style={{display: "flex", flexDirection: "column", alignItems:"center", maxWidth: "60rem", width: "100%"}}>
             <div style={SearchBar_Styles}>
                 <input type="text" placeholder="Search..." style={{border: "none", background: "none", width: "90%", outline:"none"}} onChange={(e)=>{handleSearch(e)}}/>
@@ -106,11 +104,9 @@ export default function FindCoach() {
             </div>
             <div style={CardsDiv_Styles}>
                 {Filtered.map((coach)=>(
-                    <CoachCard key={coach["Coach ID"]} name={coach["Name"]} price={coach["pricing"]} URL={coach["URL"]} rating={5} nutrition={coach["is_nutritionist"]}/>
+                    <CoachCard key={coach["Coach ID"]} name={coach["Name"]} price={coach["pricing"]} URL={coach["URL"]} rating={coach["rating"]} nutrition={coach["is_nutritionist"]} bio={coach["bio"]} id={coach["Coach ID"]}/>
                 ))}
             </div>
         </div>
-        <CoachInfoModal show={false}/>
-        </>
     );
 }

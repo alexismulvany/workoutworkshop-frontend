@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import CoachInfoModal from "./CoachInfoModal";
 
 import Card from 'react-bootstrap/Card';
 import Image from 'react-bootstrap/Image';
@@ -18,7 +19,7 @@ import DefaultProfilePic from '../images/DefaultProfile.jpg'
   something like https://....com/<imageName>.png <- this would be the link in the DB
 */
 
-function CoachCard( { rating, price, name, URL, nutrition}) {
+function CoachCard( { rating, price, name, URL, nutrition, bio, id}) {
   //set default image if a profile image cannot be found
   let imgURL = ""
   if (URL === "error: Field 'null' not found" || !URL){
@@ -48,10 +49,11 @@ function CoachCard( { rating, price, name, URL, nutrition}) {
 
  const [show, setShow] = useState(false)
 
+ const handleClose = () => setShow(false)
+
   return (
-        <a style={{cursor: "pointer"}} onClick={()=>setShow(true)}>
-        <div style={{paddingTop: "5%", width: "100%", maxWidth: "60rem"}}>
-        <Card style={{width: "100%", maxWidth: '60rem', borderRadius:"10px"}}>
+        <>
+        <Card style={{cursor: "pointer", width: "100%", maxWidth: '55rem', borderRadius:"10px", minWidth:"55rem", maxHeight:"224px", marginTop:"10px"}} onClick={()=>setShow(true)}>
             <Card.Header style={{backgroundColor: "#cb0a0a", borderTopLeftRadius:"10px", borderTopRightRadius:"10px", color: "#ffffff"}}>{name}</Card.Header>
             <Card.Body style={{backgroundColor:"#514E4A", borderBottomLeftRadius:"10px", borderBottomRightRadius:"10px"}}>
             <div style={{display:"flex", alignItems: "center" }}>  {/*main text body*/}
@@ -65,15 +67,15 @@ function CoachCard( { rating, price, name, URL, nutrition}) {
                     Price:    ${price}/week<br/>
                 </p>
               </div>
-              <div style={{width: "40%", textAlign:"center", paddingLeft: "3%"}}>
+              <div style={{width: "40%", minWidth:"40%", textAlign:"center", paddingLeft: "3%"}}>
                 <h3 style={{color:"#ffffff", right:"50%"}}><b>RATING</b></h3>
-                <Image src={stars} style={{width: "100%", height: "50%", position: "center"}}/>
+                <Image src={stars} style={{maxWidth: "100%", height: "112px", position: "center"}}/>
               </div>
             </div>{/*end of main text body*/}
             </Card.Body>
         </Card>
-        </div>
-        </a>
+        <CoachInfoModal show={show} handleClose={handleClose} name={name} URL={imgURL} price={price} category={category} bio={bio} id={id} rating={stars}/>
+        </>
         
   );
 }
