@@ -22,8 +22,7 @@ const DOTWCARD_STYLES={
 const FilterButton_Styles={
     display: "flex", 
     height: "45px", 
-    width:"45px", 
-    background: "none", 
+    width:"45px",
     justifyContent: "center",
     border: "none",
     background: "none",
@@ -39,7 +38,6 @@ const SEARCHBAR_STYLES={
     outline:"none",
     PaddingBottom: "10%",
     borderRadius: "50px",
-    border: "none",
     backgroundColor: "#d9d9d99b",
     paddingLeft: "15px",
     alignItems:"center"
@@ -81,7 +79,7 @@ const EXERCISECATEGORY_STYLES={
 
 export default function WorkoutBuilder() {
     return (
-        <div style={{display:"flex", width:"97vw", height:"100vh", flexDirection:"column", justifyContent:"center", overFlowX:"hidden"}}>
+        <div style={{display:"flex", width:"100vw", height:"100vh", flexDirection:"column", justifyContent:"center", overFlowX:"hidden", marginTop: "80px"}}>
             <div style={{display:"flex", paddingLeft:"10px", paddingRight:"10px", width:"100%", height:"20%", minWidth:"100%", minHeight:"20%", maxheight:"20%", backgroundColor:"#a3a1a1", alignItems:"center", justifyContent:"space-evenly", flexDirection:"row"}}> {/*header*/}
                 <button style={DOTWCARD_STYLES}>Sun</button>
                 <button style={DOTWCARD_STYLES}>Mon</button>
@@ -93,7 +91,7 @@ export default function WorkoutBuilder() {
             </div> {/* end of header*/}
             <div style={{display:"flex", width:"97vw", height:"100vh", flexDirection:"row"}}>
                 <div style={{display:"flex", height:"100%", minHeight:"100%", maxHeight:"100%", width:"35%", minWidth:"35%", maxWidth: "35%", backgroundColor:"#a3a1a1", flexDirection:"column"}}> {/*find workouts*/}
-                    
+
                     <div style={{display:"flex", width:"100%", minWidth:"100%", maxWidth:"100%", marginTop:"10px", justifyContent:"center", flexDirection:"row"}}>
                         <input type="text" placeholder="Search..." style={SEARCHBAR_STYLES} onChange={(e)=>{handleSearch(e)}}/>
                         <Dropdown>
@@ -117,7 +115,7 @@ export default function WorkoutBuilder() {
                             <div>V</div>
                             {/* extend exercise cards for this category using a function call and mapping*/}
                         </div>
-                        
+
                         <div style={EXERCISECATEGORY_STYLES}>
                             <div>Legs</div>
                             <div>V</div>
@@ -152,7 +150,7 @@ export default function WorkoutBuilder() {
   
                 </div> {/* end of find workouts*/}
 
-                <div style={{display:"flex", width:"65%", minWidth:"65%", maxWidth:"65%", height:"100%", minHeight:"100%", maxHeight:"100%", overflowY:"auto", alignItems:"center", flexDirection:"column"}}> {/* manager workouts*/}
+                <div style={{display:"flex", width:"80%", minWidth:"65%", maxWidth:"65%", height:"100%", minHeight:"100%", maxHeight:"100%", overflowY:"auto", alignItems:"center", flexDirection:"column"}}> {/* manager workouts*/}
                     <div style={{display:"flex", width:"100%", maxWidth:"100%", minWidth:"100%", height:"10%", minHeight:"10%", maxHeight:"10%", backgroundColor:"#711A19", alignItems:"center", justifyContent:"flex-end"}}>
                         <button style={HEADERBUTTON_STYLES}>Manage</button>
                         <button style={HEADERBUTTON_STYLES}>Add Group</button>
