@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 import './AuthModal.css';
 
 export default function DeleteAccountModal({ onClose }) {
@@ -23,7 +24,7 @@ export default function DeleteAccountModal({ onClose }) {
             const result = await response.json();
 
             if (response.ok && result.status === 'success') {
-                alert("Your account has been successfully deleted.");
+                toast.success("Your account has been successfully deleted.");
 
                 // get rid of token in localStorage
                 localStorage.removeItem('token');

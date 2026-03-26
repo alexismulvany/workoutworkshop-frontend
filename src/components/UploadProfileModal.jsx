@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import { toast } from 'react-hot-toast';
 import './AuthModal.css';
 
 export default function UploadProfileModal({ onClose }) {
@@ -14,12 +15,12 @@ export default function UploadProfileModal({ onClose }) {
         if (file) {
             //Needs to be jpeg or png
             if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
-                alert("Invalid file format. Please upload a JPEG or PNG.");
+                toast.error("Invalid file format. Please upload a JPEG or PNG.");
                 return;
             }
             // 5 MB max for pictures
             if (file.size > 5 * 1024 * 1024) {
-                alert("File is too large. Maximum size is 5MB.");
+                toast.error("File is too large. Maximum size is 5MB.");
                 return;
             }
             setSelectedFile(file);
@@ -31,7 +32,7 @@ export default function UploadProfileModal({ onClose }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!selectedFile) {
-            alert("Please select an image first.");
+            toast.error("Please select an image first.");
             return;
         }
 
@@ -57,14 +58,14 @@ export default function UploadProfileModal({ onClose }) {
             //Updates the picture in the navbar immediately after upload
             if (response.ok && result.status === 'success') {
                 setUser({ ...user, profile_picture_url: result.profile_picture_url });
-                alert("Profile picture updated successfully!");
+                toast.success("Profile picture updated successfully!");
                 onClose();
             } else {
-                alert(result.message || "Upload failed.");
+                toast.error(result.message || "Upload failed.");
             }
         } catch (error) {
             console.error("Error uploading file:", error);
-            alert("An error occurred during upload.");
+            toast.error("An error occurred during upload.");
         } finally {
             setIsUploading(false);
         }
