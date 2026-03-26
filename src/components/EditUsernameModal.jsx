@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import { toast } from 'react-hot-toast';
 import './AuthModal.css';
 
 export default function EditUsernameModal({ onClose }) {
@@ -35,7 +36,7 @@ export default function EditUsernameModal({ onClose }) {
 
             if (response.ok && result.status === 'success') {
                 setUser({ ...user, username: newUsername, first_name: newUsername });
-                alert("Username updated successfully!");
+                toast.success("Username updated successfully!");
                 onClose();
             } else {
                 setErrorMsg(result.message || "Failed to update username.");

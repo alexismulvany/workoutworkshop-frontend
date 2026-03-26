@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 import './AuthModal.css';
 
 export default function EditGoalsModal({ onClose }) {
@@ -69,7 +70,7 @@ export default function EditGoalsModal({ onClose }) {
                     goal_type: formData.goal_type,
                     information: formData.information
                 });
-                alert("Profile updated successfully!");
+                toast.success("Profile updated successfully!");
                 onClose();
             } else {
                 setErrorMsg(result.message || "Failed to update goals.");
