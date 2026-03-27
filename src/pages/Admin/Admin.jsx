@@ -131,8 +131,9 @@ export default function Admin() {
         setCurrentPageCoachReports(newPage);
     };
 
-
     return (
+        <>
+        {!isAuthenticated || user.role !== 'admin' && (
         <section className="admin-dashboard container">
             <div className="admin-dasboard-header">
                 <h1 className="admin-dashboard-title">Admin Dashboard</h1>
@@ -198,23 +199,25 @@ export default function Admin() {
                             <tr>
                                 <th>Coach ID</th>
                                 <th>Name</th>
-                                <th>Certification ID</th>
                                 <th>Status</th>
-                                <th>View Profile</th>
+                                <th>View Application</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {coachApplications.map((coach) => (
-                                <tr key={coach.coach_id}>
-                                    <td>{coach.coach_id}</td>
-                                    <td>{coach.name}</td>
-                                    <td>{coach.certification_id}</td>
-                                    <td>{coach.status}</td>
-                                    <td>
-                                        <button onClick={() => handleOpenCoachInfoModal(coach)}>View Profile</button>
-                                    </td>
+                            {coachApplications.length > 0 ? (
+                                coachApplications.map((coach) => (
+                                    <tr key={coach.coach_id}>
+                                        <td>{coach.coach_id}</td>
+                                        <td>{coach.name}</td>
+                                        <td>{coach.status}</td>
+                                        <td></td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="4" className="no-data-row">No coach applications found</td>
                                 </tr>
-                            ))}
+                            )}
                             </tbody>
                         </table>
                     )}
@@ -246,21 +249,25 @@ export default function Admin() {
                             <tr>
                                 <th>Report ID</th>
                                 <th>Name</th>
-                                <th>Reason</th>
                                 <th>Status</th>
-                                <th>View Profile</th>
+                                <th>View Report</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {coachReports.map((report) => (
-                                <tr key={report.report_id}>
-                                    <td>{report.report_id}</td>
-                                    <td>{report.name}</td>
-                                    <td>{report.reason}</td>
-                                    <td>{report.status}</td>
-                                    <td><Button></Button></td>
+                            {coachReports.length > 0 ? (
+                                coachReports.map((report) => (
+                                    <tr key={report.report_id}>
+                                        <td>{report.report_id}</td>
+                                        <td>{report.name}</td>
+                                        <td>{report.status}</td>
+                                        <td><Button></Button></td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="4" className="no-data-row">No coach reports found</td>
                                 </tr>
-                            ))}
+                            )}
                             </tbody>
                         </table>
                     )}
@@ -299,5 +306,8 @@ export default function Admin() {
                 rating={selectedCoach?.rating}
             />;
         </section>
+        )}
+        {user.role !== "A" && <h1>Access to this page is forbidden</h1>}
+        </>
     );
 }
