@@ -2,23 +2,25 @@ import React, { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import "./Admin.css";
 import toast from "react-hot-toast";
-import CoachInfoModal from '../../components/CoachInfoModal'
+import ViewCoachApplicationModal from "../../components/ViewCoachApplicationModal.jsx";
 
 export default function Admin() {
     const { isAuthenticated, user , token} = useContext(AuthContext);
     const firstName = user?.first_name;
 
-    // States for coach info modal
-    const [showCoachInfoModal, setShowCoachInfoModal] = useState(false);
-    const [selectedCoach, setSelectedCoach] = useState(null);
-    const handleCloseCoachInfoModal = () => {
-        setShowCoachInfoModal(false);
-        setSelectedCoach(null);
-    }
-    const handleOpenCoachInfoModal = (coach) => {
-        setSelectedCoach(coach);
-        setShowCoachInfoModal(true);
-    }
+    // State for ViewCoachApplicationModal
+    const [showViewCoachApplicationModal, setShowViewCoachApplicationModal] = useState(false);
+    const [selectedCoachApplication, setSelectedCoachApplication] = useState(null);
+
+    const handleOpenViewCoachApplicationModal = (coach) => {
+        setSelectedCoachApplication(coach);
+        setShowViewCoachApplicationModal(true);
+    };
+
+    const handleCloseViewCoachApplicationModal = () => {
+        setShowViewCoachApplicationModal(false);
+        setSelectedCoachApplication(null);
+    };
 
     // States for User Search / Pagination
     const [users, setUsers] = useState([]);
@@ -35,7 +37,13 @@ export default function Admin() {
             try {
                 const apiBase = import.meta.env.VITE_API_URL;
                 const url = `${apiBase}/admin/fetch-users?page=${currentPageUsers}&limit=${usersPerPage}&search=${searchQuery}`;
-                const response = await fetch( url);
+                const response = await fetch( url, {
+                    method: 'GET',
+                    headers:{
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                });
                 if (!response.ok) {
                     throw new Error("Failed to fetch users");
                 }
@@ -75,7 +83,13 @@ export default function Admin() {
             try {
                 const apiBase = import.meta.env.VITE_API_URL;
                 const url = `${apiBase}/admin/coach-applications?page=${currentPageCoachApplications}&limit=${coachApplicationsPerPage}`;
-                const response = await fetch( url);
+                const response = await fetch( url, {
+                    method: 'GET',
+                    headers:{
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                });
                 if (!response.ok) {
                     throw new Error("Failed to fetch coach applications");
                 }
@@ -110,7 +124,13 @@ export default function Admin() {
             try {
                 const apiBase = import.meta.env.VITE_API_URL;
                 const url = `${apiBase}/admin/coach-reports?page=${currentPageCoachReports}&limit=${coachReportsPerPage}`;
-                const response = await fetch( url);
+                const response = await fetch( url, {
+                    method: 'GET',
+                    headers:{
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                });
                 if (!response.ok) {
                     throw new Error("Failed to fetch coach reports");
                 }
@@ -210,7 +230,7 @@ export default function Admin() {
                                         <td>{coach.coach_id}</td>
                                         <td>{coach.name}</td>
                                         <td>{coach.status}</td>
-                                        <td></td>
+                                        <td><Button onClick={() => handleOpenViewCoachApplicationModal(coach)}>View</Button></td>
                                     </tr>
                                 ))
                             ) : (
@@ -294,17 +314,11 @@ export default function Admin() {
                 </div>
             </div>
 
-            <CoachInfoModal
-                show={showCoachInfoModal}
-                handleClose={handleCloseCoachInfoModal}
-                name={selectedCoach?.name}
-                URL={selectedCoach?.profilePicture}
-                price={selectedCoach?.price}
-                category={selectedCoach?.category}
-                id={selectedCoach?.id}
-                bio={selectedCoach?.bio}
-                rating={selectedCoach?.rating}
-            />;
+            <ViewCoachApplicationModal
+                show={showViewCoachApplicationModal}
+                handleClose={handleCloseViewCoachApplicationModal}
+                coachApplication={selectedCoachApplication}
+            />
         </section>
         )}
         {user.role !== "A" && <h1>Access to this page is forbidden</h1>}
