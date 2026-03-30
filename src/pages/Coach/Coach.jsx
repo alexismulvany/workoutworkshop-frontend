@@ -286,7 +286,7 @@ export default function Coach() {
         </div>
             )}
             {/* Needs to replaced and needs an api call to see if a user has a coach */}
-            {user.role === 'U' && (
+            {user.role === 'U' || user.role === 'A' && (
                 handleFindCoach()
             )}
         </>
