@@ -118,28 +118,39 @@ export default function ViewCoachApplicationModal({ show, handleClose, coachId }
         acceptApplication();
     }
 
-    function handleReject(){
-        const rejectApplication = async (reason) => {
+    function handleReject() {
+        const rejectApplication = async () => {
             try {
                 const apiBase = import.meta.env.VITE_API_URL;
-                const url = `${apiBase}/admin/coach-applications/${coachId}/reject`;
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ reason: reason, admin_id: user.id }),
-                });
-                if (!response.ok) {
-                    throw new Error("Failed to reject coach application");
+                const certificationIds = coach?.certification_ids || [];
+
+                if (certificationIds.length === 0) {
+                    toast.error("No certification IDs available to reject.");
+                    return;
                 }
-                toast.success("Coach application rejected successfully!");
+
+                for (const certId of certificationIds) {
+                    const url = `${apiBase}/admin/coach-applications/${certId}/reject`;
+                    const response = await fetch(url, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ admin_id: user.id }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Failed to reject certification ID: ${certId}`);
+                    }
+                }
+
+                toast.success("Coach application certifications rejected successfully!");
                 handleClose();
             } catch (error) {
                 toast.error(error.message);
             }
-        }
+        };
 
         rejectApplication();
     }
@@ -159,53 +170,59 @@ export default function ViewCoachApplicationModal({ show, handleClose, coachId }
         setShowRejectModal(false);
     };
 
+    // Modify the rendering logic to hide the main modal when the reject modal is shown
     return (
         <>
-            <Modal show={show} onHide={handleClose} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>{coach?.name} ({coach?.payment}/wk)</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <div style={BIO_STYLES}>
-                        <h3>BIO</h3>
-                        <div style={BIOTEXT_STYLES}>
-                            <p>{coach?.bio}</p>
+            {/* Main Modal */}
+            {!showRejectModal && (
+                <Modal show={show} onHide={handleClose} centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>{coach?.name} ({coach?.payment}/wk)</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <div style={BIO_STYLES}>
+                            <h3>BIO</h3>
+                            <div style={BIOTEXT_STYLES}>
+                                <p>{coach?.bio}</p>
+                            </div>
                         </div>
-                    </div>
-                    <h3>Availability</h3>
-                    <div style={{display: "flex", backgroundColor:"#D9D9D9", borderRadius: "15px", width:"95%", height:"18%", marginTop:"5%", alignItems:"center", justifyContent:"center"}}>
-                        <div style={{display: "flex",width:"95%", height:"100%", alignItems:"center", justifyContent:"center"}}>
-                            <DOTWvailibility available={availablility["SUN"]} DOTW={"Sun"}/>
-                            <DOTWvailibility available={availablility["M"]} DOTW={"Mon"}/>
-                            <DOTWvailibility available={availablility["T"]} DOTW={"Tue"}/>
-                            <DOTWvailibility available={availablility["W"]} DOTW={"Wed"}/>
-                            <DOTWvailibility available={availablility["TH"]} DOTW={"Thu"}/>
-                            <DOTWvailibility available={availablility["F"]} DOTW={"Fri"}/>
-                            <DOTWvailibility available={availablility["SAT"]} DOTW={"Sat"}/>
+                        <hr></hr>
+                        <h3>Availability:</h3>
+                        <div style={{display: "flex", backgroundColor:"#D9D9D9", borderRadius: "15px", width:"95%", height:"18%", marginTop:"5%", alignItems:"center", justifyContent:"center"}}>
+                            <div style={{display: "flex",width:"95%", height:"100%", alignItems:"center", justifyContent:"center"}}>
+                                <DOTWvailibility available={availablility["SUN"]} DOTW={"Sun"}/>
+                                <DOTWvailibility available={availablility["M"]} DOTW={"Mon"}/>
+                                <DOTWvailibility available={availablility["T"]} DOTW={"Tue"}/>
+                                <DOTWvailibility available={availablility["W"]} DOTW={"Wed"}/>
+                                <DOTWvailibility available={availablility["TH"]} DOTW={"Thu"}/>
+                                <DOTWvailibility available={availablility["F"]} DOTW={"Fri"}/>
+                                <DOTWvailibility available={availablility["SAT"]} DOTW={"Sat"}/>
+                            </div>
                         </div>
-                    </div>
-                    <div>
-                        <h3>Certification</h3>
-                        <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
-                            {coach?.certification_urls && coach.certification_urls.length > 0 ? (
-                                coach.certification_urls.map((url, index) => (
-                                    <img key={index} src={url} alt={`Certification ${index + 1}`} style={{ width: "100%", maxWidth: "200px", borderRadius: "10px", marginBottom: "10px" }}/>
-                                ))
-                            ) : (
-                                <p>No certifications available.</p>
-                            )}
+                        <hr></hr>
+                        <div>
+                            <h3>Certification(s):</h3>
+                            <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+                                {coach?.certification_urls && coach.certification_urls.length > 0 ? (
+                                    coach.certification_urls.map((url, index) => (
+                                        <img key={index} src={url} alt={`Certification ${index + 1}`} style={{ width: "100%", maxWidth: "200px", borderRadius: "10px", marginBottom: "10px" }}/>
+                                    ))
+                                ) : (
+                                    <p>No certifications available.</p>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button onClick={handleAccept}>
-                        Accept
-                    </Button>
-                    <Button variant="danger" onClick={handleRejectModal}>
-                        Reject
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button style={{backgroundColor: "#14AE5C", borderColor: "#14AE5C"}} onClick={handleAccept}>
+                            Accept
+                        </Button>
+                        <Button style={{backgroundColor: "#ff0000", borderColor: "#ff0000"}} onClick={handleRejectModal}>
+                            Reject
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            )}
 
             {/* Reject Reason Modal */}
             <Modal show={showRejectModal} onHide={handleRejectCancel}>
@@ -220,7 +237,7 @@ export default function ViewCoachApplicationModal({ show, handleClose, coachId }
                     <Button variant="secondary" onClick={handleRejectCancel}>
                         Cancel
                     </Button>
-                    <Button variant="danger" onClick={handleRejectConfirm}>
+                    <Button style={{backgroundColor: "#ff0000", borderColor: "#ff0000"}} onClick={handleRejectConfirm}>
                         Confirm Rejection
                     </Button>
                 </Modal.Footer>
