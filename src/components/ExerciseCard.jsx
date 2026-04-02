@@ -71,7 +71,7 @@ const INPUTBAR_STYlES={
 
 }
 
-export default function ExerciseCard({ URL, name, manage, handleDelete, exerciseID, planID}){
+export default function ExerciseCard({ URL, name, manage, handleDelete, equipement, exerciseID, planID}){
 
     const [showControls, setShowControls] = useState(false)
 
@@ -80,9 +80,9 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, exercise
     const [weight, setWeight] = useState("135")
 
 
-    //updateReps = () => { /*handle updating the number of reps on the exercise with the exerciseID & planID*/}
-    //updateSets = () => { /*handle updating the number of sets on the exercise with the exerciseID & planID*/}
-    //updateWeight = () => { /*handle updating theweight of the exercise with the exerciseID & planID*/}
+    //updateReps = () => {/*handle updating the number of reps on the exercise with the exerciseID & planID*/}
+    //updateSets = () => {/*handle updating the number of sets on the exercise with the exerciseID & planID*/}
+    //updateWeight = () => {/*handle updating theweight of the exercise with the exerciseID & planID*/}
     
     const deleteWorkout = () => {
         /*handle deleting exercise from planned workout in DB*/
@@ -93,7 +93,7 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, exercise
     return(
         <div style={CARD_STYLE}>
             <div style={HEADER_STYLES}> {/* Header */}
-                {name}
+                {name} | {equipement}
                 {manage &&
                     <button onClick={()=>deleteWorkout()} style={REMOVEBUTTON_STYLES}>-</button>
                 }
@@ -101,7 +101,7 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, exercise
 
             <div style={{display:"flex", width:"100%", height:"75%", alignItems:"center", paddingLeft:"10px"}}>{/*main body*/}
                 <div style={{display:"flex", position:"relative", width:"45%", height:"90%", alignItems:"center", borderRadius:"15px", overflow:"hidden"}}> {/*video container*/}
-                    <video src={benchPress} style={{width:"100%", height:"100%", objectFit:"cover"}} onClick={()=>setShowControls(true)} controls={showControls} poster={benchPressThumbnail}/>
+                    
                 </div>
                 <div style={{display:"flex", width:"55%", height:"90%", alignItems:"center", justifyContent:"center", flexDirection:"column", gap:"10px", paddingLeft:"8px", paddingRight:"8px"}}> {/*work out info*/}
                     <div style={WORKOUTDATA_BARS}>

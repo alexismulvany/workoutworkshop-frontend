@@ -119,6 +119,7 @@ export default function WorkoutBuilder() {
     const [exercises, setExercises] = useState([]);
     const [expandedCategory, setExpandedCategory] = useState(null);
     const [workoutPlan, setWorkoutPlan] = useState([]);
+    const [workoutDate, setWorkoutDate] = useState("")
 
     const [manage, setManage] = useState(false);
 
@@ -173,6 +174,13 @@ export default function WorkoutBuilder() {
     const handleManage = () =>{
         if(manage){setManage(false)}
         else {setManage(true)}
+    }
+
+    const getDate= (selectedDate) =>{
+        let today = new Date()
+        let DOW = today.getDay() // gets index value for day in week 0 for sun, 1 for mon, ..., 6 for sat
+
+        
     }
 
     return (
@@ -269,7 +277,7 @@ export default function WorkoutBuilder() {
                             <p style={{ color: "#aaa", textAlign: "center", marginTop: "20px" }}>No exercises added yet.</p>
                         ) : (
                             workoutPlan.map((exercise, index) => (
-                                <ExerciseCard key={index} name={exercise.name} manage={manage} handleDelete={()=>removeFromWorkout(index)}/>
+                                <ExerciseCard key={index} equipement={exercise.equipment_needed} name={exercise.name} manage={manage} handleDelete={()=>removeFromWorkout(index)}/>
                             ))
                         )}
 
