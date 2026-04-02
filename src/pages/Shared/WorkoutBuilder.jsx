@@ -3,6 +3,7 @@ import axios from 'axios';
 import filter from "../../images/FilterButton.png";
 import Image from 'react-bootstrap/Image';
 import Dropdown from 'react-bootstrap/Dropdown';
+import ExerciseCard from "../../components/ExerciseCard";
 
 // Styling
 const DOTWCARD_STYLES = {
@@ -119,6 +120,8 @@ export default function WorkoutBuilder() {
     const [expandedCategory, setExpandedCategory] = useState(null);
     const [workoutPlan, setWorkoutPlan] = useState([]);
 
+    const [manage, setManage] = useState(false);
+
     // Grab exercises from the Flask backend when component mounts
     useEffect(() => {
         const fetchExercises = async () => {
@@ -166,6 +169,11 @@ export default function WorkoutBuilder() {
     const removeFromWorkout = (indexToRemove) => {
         setWorkoutPlan(workoutPlan.filter((_, index) => index !== indexToRemove));
     };
+
+    const handleManage = () =>{
+        if(manage){setManage(false)}
+        else {setManage(true)}
+    }
 
     return (
         <div style={{ display: "flex", width: "100%", height: "calc(100vh - 65px)", flexDirection: "column", overflow: "hidden" }}>
@@ -250,7 +258,7 @@ export default function WorkoutBuilder() {
 
                     {/* Right Side Header */}
                     <div style={{ display: "flex", width: "100%", height: "10%", backgroundColor: "#711A19", alignItems: "center", justifyContent: "flex-end", paddingRight: "20px", gap: "15px" }}>
-                        <button style={HEADERBUTTON_STYLES}>Manage</button>
+                        <button onClick={()=>handleManage()}style={HEADERBUTTON_STYLES}>Manage</button>
                         <button style={HEADERBUTTON_STYLES}>Add Group</button>
                     </div>
 
@@ -261,18 +269,7 @@ export default function WorkoutBuilder() {
                             <p style={{ color: "#aaa", textAlign: "center", marginTop: "20px" }}>No exercises added yet.</p>
                         ) : (
                             workoutPlan.map((exercise, index) => (
-                                <div key={index} style={{ display: "flex", justifyContent: "space-between", backgroundColor: "#D9D9D9", padding: "15px", borderRadius: "10px", alignItems: "center" }}>
-                                    <div>
-                                        <strong style={{ fontSize: "1.2rem" }}>{exercise.name}</strong>
-                                        <div style={{ fontSize: "0.9rem", color: "#555" }}>{exercise.muscle_group} | {exercise.equipment_needed}</div>
-                                    </div>
-                                    <button
-                                        onClick={() => removeFromWorkout(index)}
-                                        style={{ backgroundColor: "#711A19", color: "white", border: "none", borderRadius: "5px", padding: "8px 15px", cursor: "pointer" }}
-                                    >
-                                        Remove
-                                    </button>
-                                </div>
+                                <ExerciseCard key={index} name={exercise.name} manage={manage} handleDelete={()=>removeFromWorkout(index)}/>
                             ))
                         )}
 
