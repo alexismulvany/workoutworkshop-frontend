@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useLocation } from "react-router-dom";
 import axios from 'axios';
 import filter from "../../images/FilterButton.png";
 import Image from 'react-bootstrap/Image';
@@ -125,6 +126,7 @@ export default function WorkoutBuilder() {
 
     const [manage, setManage] = useState(false); //handles if user can change exercise data
 
+    let initialdate = useLocation(); //get date initally clicked on dashboard
     // Grab exercises from the Flask backend when component mounts
     useEffect(() => {
         const fetchExercises = async () => {
@@ -141,6 +143,9 @@ export default function WorkoutBuilder() {
         };
 
         fetchExercises();
+        // load the exercises for the intial date
+        findDate(initialdate.state.day);
+        
     }, []);
 
     //Group exercises by muscle group
@@ -169,7 +174,12 @@ export default function WorkoutBuilder() {
     };
 
     //Remove exercise from workout
-    const removeFromWorkout = (indexToRemove) => {
+    const removeFromWorkout = (indexToRemove, exercise_id, plan_id) => {
+        let data ={
+            "plan_id": plan_id,
+            "exercise_id": exercise_id
+        }
+        {/* delete from planned_exercises using plan_id and exercise_id for the plan with the resulting date*/}
         setWorkoutPlan(workoutPlan.filter((_, index) => index !== indexToRemove));
     };
 
@@ -308,7 +318,7 @@ export default function WorkoutBuilder() {
                             <p style={{ color: "#aaa", textAlign: "center", marginTop: "20px" }}>No exercises added yet.</p>
                         ) : (
                             workoutPlan.map((exercise, index) => (
-                                <ExerciseCard key={index} name={exercise.name} equipement={exercise.equipment_needed} manage={manage} handleDelete={()=>removeFromWorkout(index)}/>
+                                <ExerciseCard key={index} name={exercise.name} equipement={exercise.equipment_needed} manage={manage} handleDelete={()=>removeFromWorkout(index, exercise_id, plan_id)}/>
                             ))
                         )}
 

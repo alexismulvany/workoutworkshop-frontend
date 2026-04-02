@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import benchPress from '../videos/benchPress.mp4'
 import benchPressThumbnail from '../images/benchPress Thumbnail.png'
+import Image from 'react-bootstrap/Image';
 
 const CARD_STYLE={
     display:"flex",
@@ -100,8 +100,11 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, exercise
             </div>
 
             <div style={{display:"flex", width:"100%", height:"75%", alignItems:"center", paddingLeft:"10px"}}>{/*main body*/}
+                
                 <div style={{display:"flex", position:"relative", width:"45%", height:"90%", alignItems:"center", borderRadius:"15px", overflow:"hidden"}}> {/*video container*/}
-                    
+                    <a href={URL}>
+                        <Image src={benchPressThumbnail} style={{ minHieght:"256px", minWidth:"250px", maxHeight:"256px", maxWidth:"250px", objectFit:"cover"}}/>
+                    </a>
                 </div>
                 <div style={{display:"flex", width:"55%", height:"90%", alignItems:"center", justifyContent:"center", flexDirection:"column", gap:"10px", paddingLeft:"8px", paddingRight:"8px"}}> {/*work out info*/}
                     <div style={WORKOUTDATA_BARS}>
