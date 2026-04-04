@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React, {useContext, useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { AuthContext } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 // Styling
 const PAGE_CONTAINER = {
@@ -78,25 +81,55 @@ const BACK_BTN = {
 
 export default function WorkoutLog() {
     const navigate = useNavigate();
-    // Dummy data for now
-    const [savedWorkouts, setSavedWorkouts] = useState([
-        { id: 1, date: "2/24/26", title: "Chest" },
-        { id: 2, date: "2/23/26", title: "Arms" },
-        { id: 3, date: "2/21/26", title: "Legs" },
-        { id: 4, date: "2/19/26", title: "Back" }
-    ]);
+    const [savedWorkouts, setSavedWorkouts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const { user } = useContext(AuthContext);
+
+    useEffect(() => {
+        //Don't allow the call if the user isn't created yet
+        if (!user || !user.id) return;
+        const fetchWorkouts = async () => {
+            try {
+                const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
+                const response = await axios.get(`${apiBase}/api/workouts/log/${user.id}`);
+                if (response.data.status === 'success') {
+                    setSavedWorkouts(response.data.data);
+                }
+            } catch (error) {
+                console.error("Error fetching workout log:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchWorkouts();
+    }, [user]);
 
     const handleEdit = (id) => {
         console.log("Editing workout:", id);
     };
 
-    const handleRemove = (id) => {
-        console.log("Removing workout:", id);
-        // In the future, this will send a DELETE request to Flask
+    const handleRemove = async (id) => {
+        //This window.confirm should be changed at some point to a custom modal.
+        const confirmDelete = window.confirm("Are you sure you want to delete this workout?");
+        if (!confirmDelete) return;
+
+        try {
+            const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
+            const response = await axios.delete(`${apiBase}/api/workouts/log/${id}`);
+
+            if (response.data.status === 'success') {
+                setSavedWorkouts((prevWorkouts) =>
+                    prevWorkouts.filter((workout) => workout.id !== id)
+                );
+            }
+        } catch (error) {
+            console.error("Error deleting workout:", error);
+            toast.error("Failed to delete workout. Check the console.");
+        }
     };
 
     const handleBack = () => {
-        navigate(-1) //goes back on page
+        navigate(-1) //goes back one page
     };
 
     return (
@@ -104,21 +137,27 @@ export default function WorkoutLog() {
             <h1 style={TITLE_STYLE}>Workout Log</h1>
 
             <div style={LIST_CONTAINER}>
-                {savedWorkouts.map((workout) => (
-                    <div key={workout.id} style={ROW_STYLE}>
-                        {/* Here is the {date} - {title} format! */}
-                        <div style={LOG_BOX}>
-                            {workout.date} - {workout.title}
-                        </div>
+                {loading ? (
+                    <p style={{ textAlign: "center", fontSize: "1.2rem" }}>Loading workouts...</p>
+                ) : savedWorkouts.length === 0 ? (
+                    <p style={{ textAlign: "center", fontSize: "1.2rem" }}>No workouts saved yet.</p>
+                ) : (
+                    savedWorkouts.map((workout) => (
+                        <div key={workout.id} style={ROW_STYLE}>
+                            {/* "Date - Workout Title" */}
+                            <div style={LOG_BOX}>
+                                {workout.date} - {workout.title}
+                            </div>
 
-                        <button style={EDIT_BTN} onClick={() => handleEdit(workout.id)}>
-                            Edit
-                        </button>
-                        <button style={REMOVE_BTN} onClick={() => handleRemove(workout.id)}>
-                            Remove
-                        </button>
-                    </div>
-                ))}
+                            <button style={EDIT_BTN} onClick={() => handleEdit(workout.id)}>
+                                Edit
+                            </button>
+                            <button style={REMOVE_BTN} onClick={() => handleRemove(workout.id)}>
+                                Remove
+                            </button>
+                        </div>
+                    ))
+                )}
 
                 <button style={BACK_BTN} onClick={handleBack}>
                     Back
