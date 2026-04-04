@@ -407,6 +407,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
                 });
                 setStep(1);
             } else {
+                console.log("found")
                 toast.error(result.message || "Registration failed");
             }
 

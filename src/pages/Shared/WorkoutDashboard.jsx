@@ -63,7 +63,7 @@ export default function WorkoutDashboard() {
 
     const handleDayClick = (day) => {
         //Navigate to the builder with day
-        navigate(`/workout-builder/${day}`);
+        navigate(`/workout-builder/${day}`, {state:{"day": day}});
     };
 
     const handleMenuClick = (menuItem) => {
