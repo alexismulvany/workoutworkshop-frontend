@@ -10,6 +10,8 @@ import Admin from "./pages/Admin/Admin.jsx";
 import FindCoach from "./pages/Shared/FindCoach.jsx";
 import WorkoutDashboard from "./pages/Shared/WorkoutDashboard.jsx";
 import WorkoutLog from "./pages/Shared/WorkoutLog.jsx";
+import WorkoutEdit from "./pages/Shared/WorkoutEdit.jsx";
+import WorkoutLibrary from "./pages/Shared/WorkoutLibrary.jsx"
 
 function App() {
 
@@ -36,6 +38,8 @@ function AppLayout() {
                     <Route path="/workouts" element={<WorkoutDashboard />} />
                     <Route path="/workout-builder/:day" element={<WorkoutBuilder />} />
                     <Route path="/workout-log" element={<WorkoutLog />} />
+                    <Route path="/workout-edit/:planId" element={<WorkoutEdit />} />
+                    <Route path="/workout-library" element={<WorkoutLibrary />} />
                     <Route path="/coach" element={<Coach/>} />
                     <Route path="/admin" element={<Admin/>} />
                     <Route path="/FindCoach" element={<FindCoach/>}/>

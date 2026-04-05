@@ -116,6 +116,10 @@ export default function WorkoutDashboard() {
                     WORKOUT LOG
                 </button>
 
+                <button style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("/workout-library")}>
+                    WORKOUT LIBRARY
+                </button>
+
             </div>
         </div>
     );
