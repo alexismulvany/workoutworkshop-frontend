@@ -13,6 +13,10 @@ import threestars from "../images/3_star_NOBG.png"
 import fourstars from "../images/4_star_NOBG.png"
 import fivestars from "../images/5_star_NOBG.png"
 
+const modalStyles = `
+    .report-modal-backdrop { z-index: 440 !important; }
+    .report-modal-window { z-index: 450 !important; }
+`;
 
 export default function ViewCoachReportModal({show, handleClose, reportID}) {
     const { user , token} = useContext(AuthContext);
@@ -204,14 +208,7 @@ export default function ViewCoachReportModal({show, handleClose, reportID}) {
 
     return (
         <>
-
-            <style>
-                {`
-                    .report-modal-backdrop { z-index: 440 !important; }
-                    .report-modal-window { z-index: 450 !important; }
-                `}
-            </style>
-
+            <style>{modalStyles}</style>
             {/* Main modal */}
             <Modal show={show} onHide={handleClose} centered keyboard={false} className="report-modal-window" backdropClassName="report-modal-backdrop">
                 <div onClick={(e) => e.stopPropagation()}>
