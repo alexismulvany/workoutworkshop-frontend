@@ -71,49 +71,60 @@ const INPUTBAR_STYlES={
 
 }
 
-export default function ExerciseCard({ URL, name, manage, handleDelete, equipment, reps, sets, weight}){
-
-    const [numReps, setReps] = useState(reps)
-    const [numSets, setSets] = useState(sets)
-    const [numWeight, setWeight] = useState(weight)
-
-    //updateReps = () => { /*handle updating the number of reps on the exercise with the exerciseID & planID*/}
-    //updateSets = () => { /*handle updating the number of sets on the exercise with the exerciseID & planID*/}
-    //updateWeight = () => { /*handle updating theweight of the exercise with the exerciseID & planID*/}
+export default function ExerciseCard({ URL, name, manage, handleDelete, handleUpdate, equipment, reps, sets, weight}){
 
     return(
         <div style={CARD_STYLE}>
-            <div style={HEADER_STYLES}> {/* Header */}
+            <div style={HEADER_STYLES}>
                 {name} | {equipment}
                 {manage &&
                     <button onClick={()=>handleDelete()} style={REMOVEBUTTON_STYLES}>-</button>
                 }
             </div>
 
-            <div style={{display:"flex", width:"100%", height:"75%", alignItems:"center", paddingLeft:"10px"}}>{/*main body*/}
-                
-                <div style={{display:"flex", position:"relative", width:"45%", height:"90%", alignItems:"center", borderRadius:"15px", overflow:"hidden"}}> {/*video container*/}
+            <div style={{display:"flex", width:"100%", height:"75%", alignItems:"center", paddingLeft:"10px"}}>
+
+                <div style={{display:"flex", position:"relative", width:"45%", height:"90%", alignItems:"center", borderRadius:"15px", overflow:"hidden"}}>
                     <a href={URL}>
                         <Image src={benchPressThumbnail} style={{ minHieght:"256px", minWidth:"250px", maxHeight:"256px", maxWidth:"250px", objectFit:"cover"}}/>
                     </a>
                 </div>
-                <div style={{display:"flex", width:"55%", height:"90%", alignItems:"center", justifyContent:"center", flexDirection:"column", gap:"10px", paddingLeft:"8px", paddingRight:"8px"}}> {/*work out info*/}
+                <div style={{display:"flex", width:"55%", height:"90%", alignItems:"center", justifyContent:"center", flexDirection:"column", gap:"10px", paddingLeft:"8px", paddingRight:"8px"}}>
+
                     <div style={WORKOUTDATA_BARS}>
                         Reps:
-                        <input onChange={(e)=>setReps(e.target.value)} style={INPUTBAR_STYlES} defaultValue={numReps} disabled={!manage} inputMode='numeric'/>
+                        <input
+                            onChange={(e) => handleUpdate('reps', e.target.value)}
+                            style={INPUTBAR_STYlES}
+                            value={reps || ""}
+                            disabled={!manage}
+                            inputMode='numeric'
+                        />
                     </div>
 
                     <div style={WORKOUTDATA_BARS}>
                         Sets:
-                        <input onChange={(e)=>setSets(e.target.value)} style={INPUTBAR_STYlES} defaultValue={numSets} disabled={!manage} inputMode='numeric'/>
+                        <input
+                            onChange={(e) => handleUpdate('sets', e.target.value)}
+                            style={INPUTBAR_STYlES}
+                            value={sets || ""}
+                            disabled={!manage}
+                            inputMode='numeric'
+                        />
                     </div>
+
                     <div style={WORKOUTDATA_BARS}>
                         Weight:
-                        <input onChange={(e)=>setWeight(e.target.value)} style={INPUTBAR_STYlES} defaultValue={numWeight} disabled={!manage} inputMode='numeric'/>
+                        <input
+                            onChange={(e) => handleUpdate('weight', e.target.value)}
+                            style={INPUTBAR_STYlES}
+                            value={weight || ""}
+                            disabled={!manage}
+                            inputMode='numeric'
+                        />
                     </div>
                 </div>
             </div>
         </div>
     )
-
 }
