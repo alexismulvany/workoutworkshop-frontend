@@ -3,6 +3,7 @@ import axios from 'axios'
 import benchPressThumbnail from '../images/benchPress Thumbnail.png'
 import Image from 'react-bootstrap/Image';
 import toast from "react-hot-toast";
+import ReactPlayer from 'react-player'; // npm install react-player
 
 const CARD_STYLE={
     display:"flex",
@@ -72,7 +73,7 @@ const INPUTBAR_STYlES={
 
 }
 
-export default function ExerciseCard({ URL, name, manage, handleDelete, equipment, reps, sets, weight, apply, exercise_id, plan_id}){
+export default function ExerciseCard({ URL, name, manage, handleDelete, equipment, reps, sets, weight, apply, thumbnail, exercise_id, plan_id}){
 
     const [numReps, setReps] = useState(reps)
     const [numSets, setSets] = useState(sets)
@@ -123,8 +124,6 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, equipmen
         update();
     }, [apply])
 
-    
-
     return(
         <div style={CARD_STYLE}>
             <div style={HEADER_STYLES}> {/* Header */}
@@ -136,11 +135,9 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, equipmen
 
             <div style={{display:"flex", width:"100%", height:"75%", alignItems:"center", paddingLeft:"10px"}}>{/*main body*/}
                 
-                <div style={{display:"flex", position:"relative", width:"45%", height:"90%", alignItems:"center", borderRadius:"15px", overflow:"hidden"}}> {/*video container*/}
-                    <a href={URL}>
-                        <Image src={benchPressThumbnail} style={{ minHieght:"256px", minWidth:"250px", maxHeight:"256px", maxWidth:"250px", objectFit:"cover"}}/>
-                    </a>
-                </div>
+                <a style={{display:"flex", position:"relative", width:"45%", height:"90%", alignItems:"center", borderRadius:"15px", overflow:"hidden"}}> {/*video container*/}
+                    <Image  src={thumbnail} style={{width:"100%", maxWidth:"100%", height:"100%", objectFit:"fill"}}/>
+                </a>
                 <div style={{display:"flex", width:"55%", height:"90%", alignItems:"center", justifyContent:"center", flexDirection:"column", gap:"10px", paddingLeft:"8px", paddingRight:"8px"}}> {/*work out info*/}
                     <div style={WORKOUTDATA_BARS}>
                         Reps:

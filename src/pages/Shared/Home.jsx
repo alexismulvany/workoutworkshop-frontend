@@ -8,6 +8,17 @@ import { format } from 'date-fns';
 import axios from 'axios';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar'; // npm install --save react-circular-progressbar
 import 'react-circular-progressbar/dist/styles.css';
+import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts'; // npm i recharts
+
+//star images for ratings
+import onestars from "../../images/1_star_NOBG.png"
+import twostars from "../../images/2_star_NOBG.png"
+import threestars from "../../images/3_star_NOBG.png"
+import fourstars from "../../images/4_star_NOBG.png"
+import fivestars from "../../images/5_star_NOBG.png"
+
+import DefaultProfilePic from '../../images/DefaultProfile.jpg'
+import CoachInfoModal from "../../components/CoachInfoModal";
 
 export default function Home() {
     const { isAuthenticated, user , token} = useContext(AuthContext);
@@ -17,11 +28,17 @@ export default function Home() {
     const [selectedDate, setSelectedDate] = useState(new Date().toDateString());
     const [showCoach, setShowCoach] = useState(false);
     const today = format(new Date(), "MM-dd-yyyy");
+    const [weightLogs, setWeightLogs] = useState([]);
 
     //data to handle which home page user sees
     const [hasWorkout, setHasWorkout] = useState(false); //track if user has workout
     const [hasCoach, setHasCoach] = useState(false); //track if user has a coach
     const [coachID, setCoachID] = useState(null); //get id of the user's coach
+
+    const [coachData, setCoachData] = useState([])
+    const [imgURL, setImgURL] = useState("")
+    const [category, setCategory] = useState("Strength")
+    const [showStars, setShowStars] = useState(fivestars)
 
     //handle showing workout tracker
     const [workoutPlan, setWorkoutPlan] = useState([]); // track user's workout plan
@@ -66,7 +83,7 @@ export default function Home() {
                     
                     const apiBase = import.meta.env.VITE_API_URL;
                     await axios.get(`${apiBase}/api/workouts/daily-plan/${user.id}/${today}`)
-                    .then(res => {setWorkoutPlan(res.data["data"]); setHasWorkout(res.data["hasPlan"]); console.log(`res: ${res.data["hasPlan"]}`)})
+                    .then(res => {setWorkoutPlan(res.data["data"]); setHasWorkout(res.data["hasPlan"]);})
                     .catch(err => console.log(err))
                     
                 } catch (error) {
@@ -85,11 +102,31 @@ export default function Home() {
                     console.log("error fetching coaching information")
                 }
             };
+
+            const getWeightLogs = async () => {
+                const apiBase = import.meta.env.VITE_API_URL;
+                await axios.get(`${apiBase}/user/weight-log/${user.id}`)
+                .then(
+                    //format data from axios and add it to weightLogs
+                    res => {
+                        setWeightLogs(res.data["data"].map(log=> ({
+                            date: new Date(log.log_date).toLocaleDateString("en-US", {
+                                'month': "short",
+                                'day': "numeric",
+                                'year': "numeric"
+                            }),
+                            weight: log.weight
+                        })) )
+                    }
+                )
+                .catch(err => console.log(err))
+            };
             
 
         fetchDailyRating();
         getWorkout();
         hasCoach();
+        getWeightLogs();
 
         } //end of isAuthenticated
     }, [isAuthenticated, selectedDate]);
@@ -103,7 +140,15 @@ export default function Home() {
     useEffect(()=>{
         setPercentage(completedExercises.length/workoutPlan.length)
     }, [workoutPlan, completedExercises])
-   
+
+    useEffect(()=>{
+        if(hasCoach){
+            const apiBase = import.meta.env.VITE_API_URL;
+            axios.get(`${apiBase}/coach/coach-data/${coachID}`)
+            .then(res => {setCoachData(res.data["data"][0])})
+            .catch(err => console.log(err))
+        }
+    },[hasCoach])
 
     const handleOpenLogin = () => {
         setShowLogin(true);
@@ -119,6 +164,33 @@ export default function Home() {
         setShowLogin(false);
         setShowRegister(false);
     };
+
+    const handleOpenCoach = () => {
+        if (coachData.URL === "error: Field 'null' not found" || !coachData.URL ){
+            setImgURL(DefaultProfilePic)
+        }
+        else{
+            setImgURL(coachData.URL );
+        }
+        
+          //handle showing when a coach is a nutritionist
+        if(coachData.nutrition){
+            setCategory("Strength, Nutritionist")
+        }
+
+        let stars
+        if(coachData.rating){
+            if (coachData.rating >= 4.5){stars = fivestars}
+            else if (coachData.rating >= 3.5){stars = fourstars}
+            else if (coachData.rating >= 2.5){stars = threestars}
+            else if (coachData.rating >= 1.5){stars = twostars}
+            else{stars = onestars}
+        }
+        setShowStars(stars)
+        setShowCoach(true)
+    }
+
+    const handleCloseCoach = () => {setShowCoach(false)}
 
     const handleDayClick = (day) => {
         //Navigate to the builder with day
@@ -171,8 +243,8 @@ export default function Home() {
     };
 
     const firstName = user?.first_name;
-
     return (
+        <>
         <div className="home-page">
             {!isAuthenticated ? (
                 <section className="home-hero container">
@@ -218,7 +290,7 @@ export default function Home() {
                             <p>You have no selected workout plan.</p>
                             <div className="dashboard-card-actions">
                                 <button>Create a Plan</button>
-                                <button onClick={handleFindCoach}>Hire a Coach</button>
+                                {hasCoach ? (<button onClick={()=>handleOpenCoach()}>Your Coach</button>) : (<button onClick={()=>navigate('/findCoach')}>Get Coaching</button>)}
                             </div>
                         </div>
 
@@ -230,9 +302,19 @@ export default function Home() {
                             </div>
                         </div>
 
-                        <div className="dashboard-card">
+                        <div className="dashboard-card-progress-metric">
                             <h3>Progress Metrics</h3>
                             <p>Review trends in performance, weight, and goal progress over time.</p>
+                            <div style={{display:"flex", width: "80%", height:"200px", alignItems:"center", justifyContent:"center"}}>
+                                <ResponsiveContainer width="100%" height="100%" >
+                                    <LineChart responsive data={weightLogs} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                        <XAxis dataKey="date"/>
+                                        <YAxis width={40} domain={['dataMin-5', 'dataMax+5']}/>
+                                        <Tooltip />
+                                        <Line type="monotone" dataKey="weight" stroke="#84d88b" />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -302,7 +384,7 @@ export default function Home() {
                                     </div>
                                 </button>
 
-                                {hasCoach ? (<button className="home-menu-button" onClick={()=>setShowCoach(true)}>Your Coach</button>) : (<button className="home-menu-button" onClick={()=>navigate('/findCoach')}>Get Coaching</button>)}
+                                {hasCoach ? (<button className="home-menu-button" onClick={()=>handleOpenCoach()}>Your Coach</button>) : (<button className="home-menu-button" onClick={()=>navigate('/findCoach')}>Get Coaching</button>)}
                             </div>
                             
                         </div>
@@ -315,9 +397,19 @@ export default function Home() {
                             </div>
                         </div>
 
-                        <div className="dashboard-card">
+                        <div className="dashboard-card-progress-metric">
                             <h3>Progress Metrics</h3>
                             <p>Review trends in performance, weight, and goal progress over time.</p>
+                            <div style={{display:"flex", width: "80%", height:"200px", alignItems:"center", justifyContent:"center"}}>
+                                <ResponsiveContainer width="100%" height="100%" >
+                                    <LineChart responsive data={weightLogs} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                        <XAxis dataKey="date"/>
+                                        <YAxis width={40} domain={['dataMin-5', 'dataMax+5']}/>
+                                        <Tooltip />
+                                        <Line type="monotone" dataKey="weight" stroke="#84d88b" />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -337,5 +429,17 @@ export default function Home() {
                 />
             )}
         </div>
+        <CoachInfoModal 
+            show={showCoach} 
+            handleClose={handleCloseCoach} 
+            name={coachData["Name"]} 
+            URL={imgURL} 
+            price={coachData["pricing"]} 
+            category={category} 
+            bio={coachData["bio"]} 
+            id={coachID} 
+            rating={showStars}
+        />
+    </>
     );
 }

@@ -126,6 +126,17 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
 }
 
+.dashboard-card-progress-metric {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #ececec;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
 .dashboard-card h3 {
     margin: 0 0 8px;
     color: #111;

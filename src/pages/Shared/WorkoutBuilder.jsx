@@ -424,7 +424,7 @@ export default function WorkoutBuilder() {
                             <p style={{ color: "#aaa", textAlign: "center", marginTop: "20px" }}>No exercises added yet.</p>
                         ) : (
                             workoutPlan.map((exercise, index) => (
-                                <ExerciseCard key={index} name={exercise.name} equipment={exercise.equipment_needed} URL={exercise.video_url} manage={manage} reps={exercise.reps} sets={exercise.sets} weight={exercise.weight} plan_id={exercise.plan_id} exercise_id={exercise.exercise_id} apply={apply} handleDelete={()=>removeFromWorkout(index, exercise.exercise_id, exercise.plan_id)}/>
+                                <ExerciseCard key={index} name={exercise.name} equipment={exercise.equipment_needed} URL={exercise.video_url} manage={manage} reps={exercise.reps} sets={exercise.sets} weight={exercise.weight} plan_id={exercise.plan_id} exercise_id={exercise.exercise_id} apply={apply} thumbnail={exercise.thumbnail} handleDelete={()=>removeFromWorkout(index, exercise.exercise_id, exercise.plan_id)}/>
                             ))
                         )}
                     </div>
