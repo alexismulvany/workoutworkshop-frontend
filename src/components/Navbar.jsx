@@ -119,9 +119,11 @@ const Navbar = () => {
                             </Link>
                         </li>
                         <li className="nav-item">
+                            {user.role === "C" &&(
                             <Link to="/coach" className={`nav-link px-4 py-2 rounded-pill fw-semibold ${location.pathname === '/coach' ? 'active' : ''}`}>
                                 Coach
                             </Link>
+                            )}
                         </li>
                         {user.role === 'A' && (
                         <li className="nav-item">
