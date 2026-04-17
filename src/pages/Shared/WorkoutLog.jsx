@@ -122,6 +122,7 @@ export default function WorkoutLog() {
                 setSavedWorkouts((prevWorkouts) =>
                     prevWorkouts.filter((workout) => workout.id !== id)
                 );
+                toast.success("Workout has been successfully deleted.");
             }
         } catch (error) {
             console.error("Error deleting workout:", error);
