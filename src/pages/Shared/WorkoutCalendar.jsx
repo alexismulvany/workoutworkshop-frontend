@@ -78,7 +78,7 @@ export default function WorkoutCalendar() {
     };
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100vh", backgroundColor: "#303030", fontFamily: "sans-serif" }}>
+        <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", backgroundColor: "#303030", fontFamily: "sans-serif" }}>
 
             {/* Month header with arrows */}
             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#847979", padding: "20px 0", color: "white", fontSize: "2.5rem", gap: "20px" }}>
