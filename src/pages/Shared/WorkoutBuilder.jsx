@@ -141,6 +141,7 @@ export default function WorkoutBuilder() {
     const [exercises, setExercises] = useState([]);
     const [expandedCategory, setExpandedCategory] = useState(null);
     const [workoutPlan, setWorkoutPlan] = useState([]);
+    const [filterType, setFilterType] = useState("Muscle Group");
 
     const [manage, setManage] = useState(false); //handles if user can change exercise data
     const [apply, setApply] = useState(false); //handle if users applies exercise changes
@@ -173,9 +174,18 @@ export default function WorkoutBuilder() {
 
     }, [user, initialdate.state.day]);
 
-    //Group exercises by muscle group
+    // Group exercises dynamically based on filterType
     const groupedExercises = exercises.reduce((groups, exercise) => {
-        const group = exercise.muscle_group;
+
+        // Determine the category name based on the selected filter
+        let group = "Other";
+        if (filterType === "Muscle Group") {
+            group = exercise.muscle_group || "Other";
+        } else if (filterType === "Equipment") {
+            // Default to "Bodyweight" if equipment_needed is null/empty
+            group = exercise.equipment_needed || "Bodyweight";
+        }
+
         if (!groups[group]) {
             groups[group] = [];
         }
@@ -352,15 +362,32 @@ export default function WorkoutBuilder() {
 
                     {/* Filter Section */}
                     <div style={{ display: "flex", width: "90%", margin: "0 auto 10px auto", alignItems: "center", justifyContent: "flex-end" }}>
-                        <span style={{ color: "#4D4343", fontSize: "1.2rem" }}>Filter</span>
+
+                        {/* Show what is currently selected, dynamic */}
+                        <span style={{ color: "#4D4343", fontSize: "1.2rem", marginRight: "10px" }}>
+                            Filter: {filterType}
+                        </span>
+
                         <Dropdown>
                             <Dropdown.Toggle style={FilterButton_Styles} variant="success" id="dropdown-basic">
                                 <Image src={filter} alt="filter" style={{height: "100%", width: "100%", objectFit: "contain"}}/>
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                                <Dropdown.Item>Muscle Group</Dropdown.Item>
-                                <Dropdown.Item>Equipment</Dropdown.Item>
+                                {/* Updates states and closes open sections */}
+                                <Dropdown.Item onClick={() => {
+                                    setFilterType("Muscle Group");
+                                    setExpandedCategory(null);
+                                }}>
+                                    Muscle Group
+                                </Dropdown.Item>
+
+                                <Dropdown.Item onClick={() => {
+                                    setFilterType("Equipment");
+                                    setExpandedCategory(null);
+                                }}>
+                                    Equipment
+                                </Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
                     </div>
