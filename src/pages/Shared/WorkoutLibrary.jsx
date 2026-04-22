@@ -137,7 +137,7 @@ export default function WorkoutLibrary() {
             description: "A push day will target the chest, triceps and shoulders. This workout focuses on pressing movements. ",
 
             exercises: [
-                { name: "Barbell Bench Press", sets: 4, reps: 8 },
+                { name: "Bench Press", sets: 4, reps: 8 },
                 { name: "Incline Dumbbell Press", sets: 3, reps: 10 },
                 { name: "Overhead Press", sets: 3, reps: 8 },
                 { name: "Tricep Pushdown", sets: 3, reps: 12 }
@@ -174,7 +174,7 @@ export default function WorkoutLibrary() {
             description: "This workout will work out every muscle in the upper body. It will be less sets for each exercise to limit fatigue. " +
                 "This workout will target the chest, triceps, shoulders, back, biceps, and forearms. It focuses on compound movements that engage multiple muscle groups.",
             exercises: [
-                { name: "Incline Dumbell Press", sets: 2, reps: 6 },
+                { name: "Incline Dumbbell Press", sets: 2, reps: 6 },
                 {name: "Chest Flies", sets: 2, reps: 8},
                 { name: "Overhead Tricep Extensions", sets: 3, reps: 10 },
                 { name: "Lateral Raises", sets: 3, reps: 10 },
