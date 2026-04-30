@@ -472,7 +472,13 @@ export default function Home() {
                             <h3>Workout Plan</h3>
                             <p>You have no selected workout plan.</p>
                             <div className="dashboard-card-actions">
-                                <button>Create a Plan</button>
+                                <button onClick={() => {
+                                    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+                                    const today = days[new Date().getDay()];
+                                    handleDayClick(today);
+                                }}>
+                                    Create a Plan
+                                </button>
                                 {hasCoach ? (<button onClick={()=>handleOpenCoach()}>Your Coach</button>) : (<button onClick={()=>navigate('/findCoach')}>Get Coaching</button>)}
                             </div>
                         </div>
